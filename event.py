@@ -1,9 +1,6 @@
 import RPi.GPIO as GPIO
 import time
 
-# Clean up any previous GPIO configurations
-GPIO.cleanup()
-
 # Set the GPIO mode and configure the pin
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -18,4 +15,8 @@ try:
     while True:
         time.sleep(1)  # Wait indefinitely, event detection will handle button press
 except KeyboardInterrupt:
+    pass  # Handle the keyboard interrupt gracefully
+
+finally:
+    # Clean up GPIO settings on exit
     GPIO.cleanup()
