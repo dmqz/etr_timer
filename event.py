@@ -1,22 +1,28 @@
-import RPi.GPIO as GPIO
+import lgpio
 import time
 
-# Set the GPIO mode and configure the pin
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# Initialize the GPIO
+gpio = lgpio.gpiochip(0)  # Use the first GPIO chip (usually GPIO 0 on Raspberry Pi)
 
-def button_pressed(channel):
-    print("Button pressed!")
+# Define the GPIO pin to which the button is connected
+button_pin = 17  # Replace with the actual pin number
 
-# Add event detection for GPIO 17
-GPIO.add_event_detect(17, GPIO.FALLING, callback=button_pressed, bouncetime=300)
+# Set the pin as input with a pull-up resistor
+lgpio.gpion( gpio, button_pin, lgpio.INPUT)  # Set GPIO 17 as input
+lgpio.set_pullup(gpio, button_pin)  # Enable internal pull-up resistor
+
+# Define the callback function for button press
+def button_pressed(gpio, pin, level, tick):
+    if level == lgpio.LOW:
+        print("Button pressed!")
+
+# Set up event detection on falling edge (button press)
+lgpio.event_detect(gpio, button_pin, lgpio.FALLING_EDGE, button_pressed)
 
 try:
     while True:
         time.sleep(1)  # Wait indefinitely, event detection will handle button press
 except KeyboardInterrupt:
     pass  # Handle the keyboard interrupt gracefully
-
 finally:
-    # Clean up GPIO settings on exit
-    GPIO.cleanup()
+    lgpio.close(gpio)  # Clean up and close the GPIO chip
