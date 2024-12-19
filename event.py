@@ -1,14 +1,15 @@
-import RPi.GPIO as GPIO  # Import Raspberry Pi GPIO library
+from gpiozero import Button
+from signal import pause
 
-def button_callback(channel):
+# Define the button on GPIO 17
+button = Button(17, pull_up=False)  # pull_up=False enables internal pull-down resistor
+
+# Callback function for button press
+def button_pressed():
     print("Button was pushed!")
 
-GPIO.setwarnings(False)  # Ignore warning for now
-GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Set GPIO pin 17 to be an input pin and set initial value to be pulled low (off)
+# Attach the callback to the button's "when_pressed" event
+button.when_pressed = button_pressed
 
-GPIO.add_event_detect(17, GPIO.RISING, callback=button_callback)  # Setup event on GPIO pin 17 rising edge
-
-message = input("Press enter to quit\n\n")  # Run until someone presses enter
-
-GPIO.cleanup()  # Clean up
+print("Press the button to trigger the event. Press Ctrl+C to exit.")
+pause()  # Keeps the script running
