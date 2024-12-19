@@ -1,27 +1,14 @@
-import lgpio
-import time
+import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
 
-# Initialize the GPIO
-gpio = lgpio.gpiochip_open(0)  # Open the first GPIO chip (usually GPIO 0 on Raspberry Pi)
+def button_callback(channel):
+    print("Button was pushed!")
 
-# Define the GPIO pin to which the button is connected
-button_pin = 17  # Replace with the actual pin number
+GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
+GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
 
-# Set the pin as input with a pull-up resistor (lgpio.PUD_UP)
-lgpio.gpio_claim_input(gpio, button_pin, pull=lgpio.PUD_UP)  # Set GPIO 17 as input with pull-up resistor
+GPIO.add_event_detect(10,GPIO.RISING,callback=button_callback) # Setup event on pin 10 rising edge
 
-# Define the callback function for button press
-def button_pressed(gpio, pin, level, tick):
-    if level == lgpio.LOW:
-        print("Button pressed!")
+message = input("Press enter to quit\n\n") # Run until someone presses enter
 
-# Set up event detection on falling edge (button press)
-lgpio.gpio_event(gpio, button_pin, lgpio.FALLING_EDGE, button_pressed)
-
-try:
-    while True:
-        time.sleep(1)  # Wait indefinitely, event detection will handle button press
-except KeyboardInterrupt:
-    pass  # Handle the keyboard interrupt gracefully
-finally:
-    lgpio.gpiochip_close(gpio)  # Close the GPIO chip and clean up
+GPIO.cleanup() # Clean up
