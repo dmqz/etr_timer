@@ -27,10 +27,10 @@ class CountdownTimer:
         self.timer_text_items = []
 
         # Setup GPIO for button
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
         GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button connected to GPIO 17 with pull-up resistor
 
-        # Detect button press
+        # Detect button press (falling edge)
         GPIO.add_event_detect(17, GPIO.FALLING, callback=self.toggle_timer, bouncetime=300)
 
         # Update the UI
@@ -79,6 +79,7 @@ class CountdownTimer:
         return f"{minutes:02}:{seconds:02}"
 
     def toggle_timer(self, channel):
+        print("Button pressed")  # Debugging log
         if not self.running:
             self.running = True
             self.update_timer()
@@ -118,3 +119,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = CountdownTimer(root)
     root.mainloop()
+
