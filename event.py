@@ -7,9 +7,8 @@ gpio = lgpio.gpiochip_open(0)  # Open the first GPIO chip (usually GPIO 0 on Ras
 # Define the GPIO pin to which the button is connected
 button_pin = 17  # Replace with the actual pin number
 
-# Set the pin as input with a pull-up resistor
-lgpio.gpio_claim_input(gpio, button_pin)  # Set GPIO 17 as input
-lgpio.gpio_set_pullup(gpio, button_pin)  # Enable internal pull-up resistor
+# Set the pin as input with a pull-up resistor (lgpio.PUD_UP)
+lgpio.gpio_claim_input(gpio, button_pin, pull=lgpio.PUD_UP)  # Set GPIO 17 as input with pull-up resistor
 
 # Define the callback function for button press
 def button_pressed(gpio, pin, level, tick):
