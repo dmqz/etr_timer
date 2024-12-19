@@ -2,15 +2,13 @@ import tkinter as tk
 from tkinter import font
 from PIL import Image, ImageTk
 import time
+import RPi.GPIO as GPIO
 
 class CountdownTimer:
     def __init__(self, root):
         self.root = root
         self.root.title("Countdown Timer")
         self.root.attributes("-fullscreen", True)  # Make the application fullscreen
-
-        # Bind 'q' to exit the application
-        self.root.bind("q", lambda event: self.root.destroy())
 
         # Load the background image
         self.bg_image = Image.open("bg.jpg")
@@ -28,8 +26,12 @@ class CountdownTimer:
         self.timer_outline = []
         self.timer_text_items = []
 
-        # Key bindings
-        self.root.bind("<space>", self.toggle_timer)
+        # Setup GPIO for button
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button connected to GPIO 17 with pull-up resistor
+
+        # Detect button press
+        GPIO.add_event_detect(17, GPIO.FALLING, callback=self.toggle_timer, bouncetime=300)
 
         # Update the UI
         self.update_ui()
@@ -76,7 +78,7 @@ class CountdownTimer:
         minutes, seconds = divmod(self.time_left, 60)
         return f"{minutes:02}:{seconds:02}"
 
-    def toggle_timer(self, event):
+    def toggle_timer(self, channel):
         if not self.running:
             self.running = True
             self.update_timer()
