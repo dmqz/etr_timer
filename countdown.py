@@ -115,8 +115,15 @@ class CountdownTimer:
             for text_item in self.timer_text_items:
                 self.canvas.itemconfig(text_item, fill="white")
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = CountdownTimer(root)
-    root.mainloop()
+    def cleanup_gpio(self):
+        GPIO.cleanup()
 
+if __name__ == "__main__":
+    try:
+        root = tk.Tk()
+        app = CountdownTimer(root)
+        root.mainloop()
+    except KeyboardInterrupt:
+        # Handle cleanup on exit
+        print("Exiting...")
+        app.cleanup_gpio()
