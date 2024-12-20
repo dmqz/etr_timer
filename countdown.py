@@ -3,6 +3,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 import time
 import RPi.GPIO as GPIO
+import sys  # For sys.exit()
 
 class CountdownTimer:
     def __init__(self, root):
@@ -32,6 +33,10 @@ class CountdownTimer:
 
         # Start polling for button press
         self.poll_button()
+
+        # Add quit button
+        self.quit_button = tk.Button(root, text="Quit", font=("Helvetica", 30), command=self.quit_app)
+        self.quit_button.pack(side=tk.BOTTOM, pady=20)
 
         # Update the UI
         self.update_ui()
@@ -121,8 +126,11 @@ class CountdownTimer:
             self.toggle_timer()
         self.root.after(100, self.poll_button)  # Poll every 100ms
 
-    def cleanup_gpio(self):
-        GPIO.cleanup()
+    def quit_app(self):
+        print("Exiting application...")
+        GPIO.cleanup()  # Cleanup GPIO before exiting
+        self.root.quit()  # Quit the Tkinter main loop
+        sys.exit()  # Exit the program
 
 if __name__ == "__main__":
     try:
