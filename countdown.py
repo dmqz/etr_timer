@@ -59,7 +59,7 @@ class CountdownTimer:
         x_center, y_center = width // 2, height // 2
 
         # Dynamically calculate the font size based on window height
-        font_size = int(height * 0.2)  # Font size as 20% of the window height
+        font_size = int(height * 0.3)  # Font size as 20% of the window height
         self.timer_font = font.Font(family="Helvetica", size=font_size, weight="bold")
 
         # Draw text outlines
