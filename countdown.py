@@ -22,10 +22,9 @@ class CountdownTimer:
         self.running = False
         self.blink = False
 
-        # Custom font for the timer
-        self.timer_font = font.Font(family="Helvetica", size=480, weight="bold")
-        self.timer_outline = []
-        self.timer_text_items = []
+        # Initialize debounce delay variable
+        self.last_button_press_time = 0
+        self.debounce_delay = 500  # 500ms debounce delay
 
         # Setup GPIO for button
         GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
@@ -33,10 +32,6 @@ class CountdownTimer:
 
         # Start polling for button press
         self.poll_button()
-
-        # Initialize debounce delay variable
-        self.last_button_press_time = 0
-        self.debounce_delay = 500  # 500ms debounce delay
 
         # Update the UI
         self.update_ui()
@@ -48,7 +43,7 @@ class CountdownTimer:
         self.bg_photo = ImageTk.PhotoImage(resized_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.bg_photo)
 
-        # Recreate timer text
+        # Recreate timer text with dynamic font size
         self.redraw_timer_text(event.width, event.height)
 
     def redraw_timer_text(self, width, height):
@@ -58,6 +53,10 @@ class CountdownTimer:
 
         # Calculate the center of the window
         x_center, y_center = width // 2, height // 2
+
+        # Dynamically calculate the font size based on window height
+        font_size = int(height * 0.2)  # Font size as 20% of the window height
+        self.timer_font = font.Font(family="Helvetica", size=font_size, weight="bold")
 
         # Draw text outlines
         self.timer_outline = []
