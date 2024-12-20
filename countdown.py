@@ -12,7 +12,7 @@ class CountdownTimer:
         self.root.attributes("-fullscreen", True)  # Make the application fullscreen
 
         # Load the background image
-        self.bg_image = Image.open("bg.jpg")
+        self.bg_image = Image.open("bg2.jpg")
         self.canvas = tk.Canvas(root, highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         self.canvas.bind("<Configure>", self.resize_background)
