@@ -30,8 +30,8 @@ class CountdownTimer:
         GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
         GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button connected to GPIO 17 with pull-up resistor
 
-        # Detect button press (falling edge)
-        GPIO.add_event_detect(17, GPIO.FALLING, callback=self.toggle_timer, bouncetime=300)
+        # Start polling for button press
+        self.poll_button()
 
         # Update the UI
         self.update_ui()
@@ -78,7 +78,7 @@ class CountdownTimer:
         minutes, seconds = divmod(self.time_left, 60)
         return f"{minutes:02}:{seconds:02}"
 
-    def toggle_timer(self, channel):
+    def toggle_timer(self):
         print("Button pressed")  # Debugging log
         if not self.running:
             self.running = True
@@ -114,6 +114,12 @@ class CountdownTimer:
         else:
             for text_item in self.timer_text_items:
                 self.canvas.itemconfig(text_item, fill="white")
+
+    def poll_button(self):
+        # Poll the button state and trigger toggle_timer if pressed
+        if GPIO.input(17) == GPIO.LOW:  # Button pressed (active low)
+            self.toggle_timer()
+        self.root.after(100, self.poll_button)  # Poll every 100ms
 
     def cleanup_gpio(self):
         GPIO.cleanup()
