@@ -34,9 +34,9 @@ class CountdownTimer:
         # Start polling for button press
         self.poll_button()
 
-        # Add quit button
-        self.quit_button = tk.Button(root, text="Quit", font=("Helvetica", 30), command=self.quit_app)
-        self.quit_button.pack(side=tk.BOTTOM, pady=20)
+        # Initialize debounce delay variable
+        self.last_button_press_time = 0
+        self.debounce_delay = 500  # 500ms debounce delay
 
         # Update the UI
         self.update_ui()
@@ -121,12 +121,21 @@ class CountdownTimer:
                 self.canvas.itemconfig(text_item, fill="white")
 
     def poll_button(self):
-        # Poll the button state and trigger toggle_timer if pressed
-        if GPIO.input(17) == GPIO.LOW:  # Button pressed (active low)
-            self.toggle_timer()
-        self.root.after(100, self.poll_button)  # Poll every 100ms
+        # Get the current time
+        current_time = time.time() * 1000  # Convert to milliseconds
+        
+        # Only process the button press if enough time has passed since the last press
+        if GPIO.input(17) == GPIO.LOW and (current_time - self.last_button_press_time) > self.debounce_delay:
+            self.toggle_timer()  # Trigger the toggle action
+            self.last_button_press_time = current_time  # Update the last button press time
+        
+        # Poll every 100ms
+        self.root.after(100, self.poll_button)
 
-    def quit_app(self):
+    def cleanup_gpio(self):
+        GPIO.cleanup()
+
+    def close_app(self):
         print("Exiting application...")
         GPIO.cleanup()  # Cleanup GPIO before exiting
         self.root.quit()  # Quit the Tkinter main loop
@@ -136,8 +145,11 @@ if __name__ == "__main__":
     try:
         root = tk.Tk()
         app = CountdownTimer(root)
+
+        # Handle Ctrl+C (KeyboardInterrupt) to exit the app gracefully
+        root.protocol("WM_DELETE_WINDOW", app.close_app)  # Handle window close
         root.mainloop()
     except KeyboardInterrupt:
-        # Handle cleanup on exit
+        # Handle cleanup on exit (Ctrl+C)
         print("Exiting...")
         app.cleanup_gpio()
