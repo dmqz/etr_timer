@@ -26,6 +26,10 @@ class CountdownTimer:
         self.last_button_press_time = 0
         self.debounce_delay = 500  # 500ms debounce delay
 
+        # Initialize timer outline and text items lists
+        self.timer_outline = []
+        self.timer_text_items = []
+
         # Setup GPIO for button
         GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
         GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button connected to GPIO 17 with pull-up resistor
